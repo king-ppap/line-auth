@@ -952,6 +952,67 @@
     cssnano-preset-default "^4.0.0"
     postcss "^7.0.0"
 
+"@intlify/core-base@9.1.8":
+  version "9.1.8"
+  resolved "https://registry.npmmirror.com/@intlify/core-base/download/@intlify/core-base-9.1.8.tgz#7c7f983c5f4e9c0ec88479c0084a267febd0bedf"
+  integrity sha1-fH+YPF9OnA7IhHnACEomf+vQvt8=
+  dependencies:
+    "@intlify/devtools-if" "9.1.8"
+    "@intlify/message-compiler" "9.1.8"
+    "@intlify/message-resolver" "9.1.8"
+    "@intlify/runtime" "9.1.8"
+    "@intlify/shared" "9.1.8"
+    "@intlify/vue-devtools" "9.1.8"
+
+"@intlify/devtools-if@9.1.8":
+  version "9.1.8"
+  resolved "https://registry.npmmirror.com/@intlify/devtools-if/download/@intlify/devtools-if-9.1.8.tgz?cache=0&sync_timestamp=1633327105440&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40intlify%2Fdevtools-if%2Fdownload%2F%40intlify%2Fdevtools-if-9.1.8.tgz#26c1443fb03b8e6a05eae66b7a1b56fc9bdef416"
+  integrity sha1-JsFEP7A7jmoF6uZrehtW/Jve9BY=
+  dependencies:
+    "@intlify/shared" "9.1.8"
+
+"@intlify/message-compiler@9.1.8":
+  version "9.1.8"
+  resolved "https://registry.npmmirror.com/@intlify/message-compiler/download/@intlify/message-compiler-9.1.8.tgz?cache=0&sync_timestamp=1633327102329&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40intlify%2Fmessage-compiler%2Fdownload%2F%40intlify%2Fmessage-compiler-9.1.8.tgz#3eb1d91049447f45617d09949bbf00252ab26dd1"
+  integrity sha1-PrHZEElEf0VhfQmUm78AJSqybdE=
+  dependencies:
+    "@intlify/message-resolver" "9.1.8"
+    "@intlify/shared" "9.1.8"
+    source-map "0.6.1"
+
+"@intlify/message-resolver@9.1.8":
+  version "9.1.8"
+  resolved "https://registry.npmmirror.com/@intlify/message-resolver/download/@intlify/message-resolver-9.1.8.tgz?cache=0&sync_timestamp=1633327103268&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40intlify%2Fmessage-resolver%2Fdownload%2F%40intlify%2Fmessage-resolver-9.1.8.tgz#8b9bc79e82348abe434c9277dad45191c5e341d7"
+  integrity sha1-i5vHnoI0ir5DTJJ32tRRkcXjQdc=
+
+"@intlify/runtime@9.1.8":
+  version "9.1.8"
+  resolved "https://registry.npmmirror.com/@intlify/runtime/download/@intlify/runtime-9.1.8.tgz?cache=0&sync_timestamp=1633327102679&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40intlify%2Fruntime%2Fdownload%2F%40intlify%2Fruntime-9.1.8.tgz#976bf5fd69bbf6e7080c2e613dd76bbd1aa34a45"
+  integrity sha1-l2v1/Wm79ucIDC5hPddrvRqjSkU=
+  dependencies:
+    "@intlify/message-compiler" "9.1.8"
+    "@intlify/message-resolver" "9.1.8"
+    "@intlify/shared" "9.1.8"
+
+"@intlify/shared@9.1.8":
+  version "9.1.8"
+  resolved "https://registry.npmmirror.com/@intlify/shared/download/@intlify/shared-9.1.8.tgz#b3993dfc788846010dee1e66ca998a8713bcf460"
+  integrity sha1-s5k9/HiIRgEN7h5mypmKhxO89GA=
+
+"@intlify/vue-devtools@9.1.8":
+  version "9.1.8"
+  resolved "https://registry.npmmirror.com/@intlify/vue-devtools/download/@intlify/vue-devtools-9.1.8.tgz#07d47a791197e47327afe1966023458121833f57"
+  integrity sha1-B9R6eRGX5HMnr+GWYCNFgSGDP1c=
+  dependencies:
+    "@intlify/message-resolver" "9.1.8"
+    "@intlify/runtime" "9.1.8"
+    "@intlify/shared" "9.1.8"
+
+"@mdi/font@^6.2.95":
+  version "6.2.95"
+  resolved "https://registry.npmmirror.com/@mdi/font/download/@mdi/font-6.2.95.tgz#7084ad939253a3d62e38f77d85f6c0c38508fbb2"
+  integrity sha1-cIStk5JTo9YuOPd9hfbAw4UI+7I=
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.npm.taobao.org/@mrmlnc/readdir-enhanced/download/@mrmlnc/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
@@ -1440,6 +1501,11 @@
     vue-template-es2015-compiler "^1.9.0"
   optionalDependencies:
     prettier "^1.18.2"
+
+"@vue/devtools-api@^6.0.0-beta.7":
+  version "6.0.0-beta.18"
+  resolved "https://registry.npmmirror.com/@vue/devtools-api/download/@vue/devtools-api-6.0.0-beta.18.tgz#84c0aff9289a57294cb97490811f69e8a0a67f8a"
+  integrity sha1-hMCv+SiaVylMuXSQgR9p6KCmf4o=
 
 "@vue/eslint-config-prettier@^6.0.0":
   version "6.0.0"
@@ -1943,6 +2009,13 @@ aws4@^1.8.0:
   version "1.11.0"
   resolved "https://registry.nlark.com/aws4/download/aws4-1.11.0.tgz#d61f46d83b2519250e2784daf5b09479a8b41c59"
   integrity sha1-1h9G2DslGSUOJ4Ta9bCUeai0HFk=
+
+axios@^0.22.0:
+  version "0.22.0"
+  resolved "https://registry.npmmirror.com/axios/download/axios-0.22.0.tgz?cache=0&sync_timestamp=1633067756491&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2Faxios%2Fdownload%2Faxios-0.22.0.tgz#bf702c41fb50fbca4539589d839a077117b79b25"
+  integrity sha1-v3AsQftQ+8pFOVidg5oHcRe3myU=
+  dependencies:
+    follow-redirects "^1.14.4"
 
 babel-eslint@^10.1.0:
   version "10.1.0"
@@ -4229,7 +4302,7 @@ flush-write-stream@^1.0.0:
     inherits "^2.0.3"
     readable-stream "^2.3.6"
 
-follow-redirects@^1.0.0:
+follow-redirects@^1.0.0, follow-redirects@^1.14.4:
   version "1.14.4"
   resolved "https://registry.nlark.com/follow-redirects/download/follow-redirects-1.14.4.tgz?cache=0&sync_timestamp=1631622163078&other_urls=https%3A%2F%2Fregistry.nlark.com%2Ffollow-redirects%2Fdownload%2Ffollow-redirects-1.14.4.tgz#838fdf48a8bbdd79e52ee51fb1c94e3ed98b9379"
   integrity sha1-g4/fSKi73XnlLuUfsclOPtmLk3k=
@@ -8100,15 +8173,15 @@ source-map-url@^0.4.0:
   resolved "https://registry.nlark.com/source-map-url/download/source-map-url-0.4.1.tgz#0af66605a745a5a2f91cf1bbf8a7afbc283dec56"
   integrity sha1-CvZmBadFpaL5HPG7+KevvCg97FY=
 
+source-map@0.6.1, source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.0, source-map@~0.6.1:
+  version "0.6.1"
+  resolved "https://registry.npm.taobao.org/source-map/download/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
+  integrity sha1-dHIq8y6WFOnCh6jQu95IteLxomM=
+
 source-map@^0.5.0, source-map@^0.5.6:
   version "0.5.7"
   resolved "https://registry.npm.taobao.org/source-map/download/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
   integrity sha1-igOdLRAh0i0eoUyA2OpGi6LvP8w=
-
-source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.0, source-map@~0.6.1:
-  version "0.6.1"
-  resolved "https://registry.npm.taobao.org/source-map/download/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
-  integrity sha1-dHIq8y6WFOnCh6jQu95IteLxomM=
 
 source-map@^0.7.3:
   version "0.7.3"
@@ -8976,6 +9049,16 @@ vue-hot-reload-api@^2.3.0:
   resolved "https://registry.nlark.com/vue-hot-reload-api/download/vue-hot-reload-api-2.3.4.tgz#532955cc1eb208a3d990b3a9f9a70574657e08f2"
   integrity sha1-UylVzB6yCKPZkLOp+acFdGV+CPI=
 
+vue-i18n@^9.1.8:
+  version "9.1.8"
+  resolved "https://registry.npmmirror.com/vue-i18n/download/vue-i18n-9.1.8.tgz#9bd6c9e1e9bd038690d1d477d242a6f226543318"
+  integrity sha1-m9bJ4em9A4aQ0dR30kKm8iZUMxg=
+  dependencies:
+    "@intlify/core-base" "9.1.8"
+    "@intlify/shared" "9.1.8"
+    "@intlify/vue-devtools" "9.1.8"
+    "@vue/devtools-api" "^6.0.0-beta.7"
+
 "vue-loader-v16@npm:vue-loader@^16.1.0":
   version "16.8.1"
   resolved "https://registry.npmmirror.com/vue-loader/download/vue-loader-16.8.1.tgz?cache=0&sync_timestamp=1632349808529&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2Fvue-loader%2Fdownload%2Fvue-loader-16.8.1.tgz#354f12bc0897954158b71590f800295713a7792d"
@@ -9026,6 +9109,11 @@ vue@^2.6.11:
   version "2.6.14"
   resolved "https://registry.npmmirror.com/vue/download/vue-2.6.14.tgz?cache=0&sync_timestamp=1632596410846&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2Fvue%2Fdownload%2Fvue-2.6.14.tgz#e51aa5250250d569a3fbad3a8a5a687d6036e235"
   integrity sha1-5RqlJQJQ1Wmj+606ilpofWA24jU=
+
+vuetify@^2.5.9:
+  version "2.5.9"
+  resolved "https://registry.npmmirror.com/vuetify/download/vuetify-2.5.9.tgz#b6e6d9fff4a1691858f3415eceb2a75ca706d211"
+  integrity sha1-tubZ//ShaRhY80FezrKnXKcG0hE=
 
 vuex@^3.4.0:
   version "3.6.2"
