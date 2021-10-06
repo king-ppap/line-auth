@@ -1,40 +1,40 @@
-function errorHandler(err, response) {
-  if (!response) throw err
+function errorHandler(error, response) {
+  if (!response) throw error
 
-  const errType = err.name
+  const errType = error.name
   switch (errType) {
     case 'InvalidRequestError':
       return response
         .status(400)
-        .json({ err: 'bad_request', message: err.message, detail: err.detail })
+        .json({ error: 'bad_request', message: error.message, detail: error.detail })
     case 'AuthCantVerify':
       return response
         .status(401)
-        .json({ err: 'wrong_auth', message: 'Wrong_auth' })
+        .json({ error: 'wrong_auth', message: 'Wrong_auth' })
     case 'Forbidden':
       return response
         .status(403)
-        .json({ err: 'forbidden', message: err.message, detail: err.detail || 'forbidden' })
+        .json({ error: 'forbidden', message: error.message, detail: error.detail || 'forbidden' })
     case 'NotFoundError':
       return response
         .status(404)
-        .json({ err: 'not_found', message: err.message })
+        .json({ error: 'not_found', message: error.message })
     case 'OutOfStockError':
       return response
         .status(406)
-        .json({ err: 'bad_request', message: err.message })
+        .json({ error: 'bad_request', message: error.message })
     case 'UserDuplicateError':
       return response
         .status(409)
-        .json({ err: 'conflict', message: err.message })
+        .json({ error: 'conflict', message: error.message })
     case 'RequestLargeError':
       return response
         .status(413)
-        .json({ err: 'bad_request', message: err.message, detail: err.detail })
+        .json({ error: 'bad_request', message: error.message, detail: error.detail })
     default:
       return response
         .status(500)
-        .json({ err: 'internal', message: err.message || 'error' })
+        .json({ error: 'internal', message: error.message || 'error' })
   }
 }
 
