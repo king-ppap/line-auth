@@ -5,7 +5,7 @@ const SsoAuth = require('../../services/auth/sso')
 
 function authLineController(request) {
   console.log(request);
-  return SsoAuth.authLineService();
+  return SsoAuth.authLineService(request);
 };
 
 module.exports = {
