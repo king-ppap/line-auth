@@ -1,11 +1,11 @@
 const { expressHandler } = require('../express-handler')
+
 // const jwt = require('jsonwebtoken')
 // const ConnectDB = require('../database').connectionFoodStory
 const SsoAuth = require('../../services/auth/sso')
 
-function authLineController(request) {
-  console.log(request);
-  return SsoAuth.authLineService(request);
+async function authLineController(request) {
+  return await SsoAuth.authLineService(request);
 };
 
 module.exports = {
@@ -13,7 +13,7 @@ module.exports = {
   //     handler: loginController
   // }),
   authLineController: expressHandler({
-      handler: authLineController
+    handler: authLineController
   }),
   // loginWebTeamController: expressHandler({
   //     handler: loginWebTeamController
