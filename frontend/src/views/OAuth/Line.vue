@@ -5,6 +5,10 @@
   >Authenticating users and making authorization requests</a>
   <br />
   <a href="https://developers.line.biz/en/docs/line-login/integrate-line-login/#scopes">Scopes</a>
+  <br />
+  <a href="https://developers.line.biz/en/docs/line-login/integrate-pkce/">PKCE support for LINE Login</a>
+  <br />
+  <a href="https://developers.line.biz/en/docs/line-login/link-a-bot/#redirect-users/">Redirect users to the LINE Login authorization URL with the bot_prompt query parameter</a>
   <hr />
   <textarea style="width: 500px; height: 500px;">{{ fromLine }}</textarea>
 </template>
