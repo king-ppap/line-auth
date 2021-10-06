@@ -19,9 +19,9 @@ export default defineComponent({
     }
   },
   computed: {
-    fromLine() {
+    fromLine(): string {
       return JSON.stringify(this.$route.query, null, 4);
-    }
+    },
   }
 });
 </script>
