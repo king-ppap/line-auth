@@ -75,15 +75,15 @@ export default defineComponent({
       }
       const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);           // hash the message
       const hashArray = Array.from(new Uint8Array(hashBuffer));                     // convert buffer to byte array
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join(''); // convert bytes to hex string
-      return hashHex;
+
+      return btoa(String.fromCharCode(...new Uint8Array(hashArray)));
     },
     async loginLine() {
       const codeVerifier = this.randomString(48);
       localStorage.setItem("codeVerifier", codeVerifier);
 
       const code_challenge = this.base64UrlEncode(
-        btoa(await this.digestMessage(codeVerifier))
+        await this.digestMessage(codeVerifier)
       );
 
       let params = new URLSearchParams(
