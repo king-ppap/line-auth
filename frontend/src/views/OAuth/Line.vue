@@ -79,11 +79,11 @@ export default defineComponent({
       return hashHex;
     },
     async loginLine() {
-      const codeVerifier = this.randomString(100);
+      const codeVerifier = this.randomString(48);
       localStorage.setItem("codeVerifier", codeVerifier);
 
       const code_challenge = this.base64UrlEncode(
-        await this.digestMessage(codeVerifier)
+        btoa(await this.digestMessage(codeVerifier))
       );
 
       let params = new URLSearchParams(
