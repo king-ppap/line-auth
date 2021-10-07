@@ -1,6 +1,6 @@
 <template>
   <a
-    href="https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=1656499349&redirect_uri=http://line.kingonhuy.local:8080/auth/line&state=12345abcde&scope=profile%20openid&bot_prompt=aggressive"
+    href="https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=1656499349&redirect_uri=https://line.kingonhuy.local:8080/auth/line&state=12345abcde&scope=profile%20openid&bot_prompt=aggressive"
   >Login</a>
   <br />
   <br />
@@ -105,7 +105,7 @@ export default defineComponent({
     callbackToBackend(code: string, state: string) {
       this.isLoading = true;
       const codeVerifier = localStorage.getItem("codeVerifier");
-      return axios.post("http://line.kingonhuy.local:3000/v1/auth/line", {
+      return axios.post("https://line.kingonhuy.local:3000/v1/auth/line", {
         code,
         state,
         code_verifier: codeVerifier,

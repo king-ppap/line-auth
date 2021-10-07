@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "dev": "nodemon index-dev-http-mode.js --trace-warnings"
   },
   "dependencies": {
     "axios": "^0.22.0",
