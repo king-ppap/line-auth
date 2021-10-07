@@ -7,9 +7,7 @@ async function authLineService(request) {
   console.log("authLineService");
   const {
     code,
-    state,
-    // TODO PKCE
-    // TODO State
+    code_verifier,
   } = request.body;
 
   console.log(request.body);
@@ -17,7 +15,7 @@ async function authLineService(request) {
   const data = qs.stringify({
     grant_type: "authorization_code",
     code,
-    state,
+    code_verifier,
     redirect_uri: process.env.AUTH_LINE_REDIRECT_URI,
     client_id: process.env.AUTH_LINE_CLIENT_ID,
     client_secret: process.env.AUTH_LINE_CLIENT_SECRET,
