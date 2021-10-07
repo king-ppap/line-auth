@@ -1,3 +1,5 @@
+const qs = require('qs');
+
 const axios = require("axios");
 const APIError = require('../../errors/api-error');
 
@@ -5,23 +7,51 @@ async function authLineService(request) {
   console.log("authLineService");
   const {
     code,
+    state,
     // TODO PKCE
     // TODO State
   } = request.body;
 
   console.log(request.body);
 
-  return await axios.post("https://api.line.me/oauth2/v2.1/token", {
+  const data = qs.stringify({
     grant_type: "authorization_code",
     code,
+    state,
     redirect_uri: process.env.AUTH_LINE_REDIRECT_URI,
     client_id: process.env.AUTH_LINE_CLIENT_ID,
     client_secret: process.env.AUTH_LINE_CLIENT_SECRET,
-  }).then((response) => {
+  });
+  const config = {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+  };
+
+  console.log(data);
+
+  const lineAccess = await axios.post(
+    "https://api.line.me/oauth2/v2.1/token",
+    data,
+    config,
+  ).then((response) => {
     return response.data;
   }).catch((error) => {
-    throw new APIError("InvalidRequestError", "Error from Line API", error.response.data);
+    throw new APIError("InvalidRequestError", "Error from Line token API", error.response.data);
+  });
+
+  console.log(lineAccess);
+
+  return await axios.get("https://api.line.me/v2/profile", {
+    headers: {
+      Authorization: `Bearer ${lineAccess.access_token}`,
+    },
   })
+  .then((response) => {
+    return response.data;
+  }).catch((error) => {
+    throw new APIError("InvalidRequestError", "Error from Line v2 Profile API", error.response.data);
+  });
 }
 
 module.exports = {

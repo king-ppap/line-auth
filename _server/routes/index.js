@@ -3,7 +3,8 @@ const router = express.Router()
 
 const cors = require('cors')
 const whitelist = [
-  'line.kingonhuy.local'
+  'line.kingonhuy.local',
+  'http://line.kingonhuy.local:8080',
 ]
 
 let corsOptions = {
