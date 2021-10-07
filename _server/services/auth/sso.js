@@ -42,7 +42,7 @@ async function authLineService(request) {
 
   console.log(lineAccess);
 
-  return await axios.get("https://api.line.me/v2/profile", {
+  const profile = await axios.get("https://api.line.me/v2/profile", {
     headers: {
       Authorization: `Bearer ${lineAccess.access_token}`,
     },
@@ -52,6 +52,11 @@ async function authLineService(request) {
   }).catch((error) => {
     throw new APIError("InvalidRequestError", "Error from Line v2 Profile API", error.response.data);
   });
+
+  return {
+    lineAccess,
+    profile,
+  }
 }
 
 module.exports = {
