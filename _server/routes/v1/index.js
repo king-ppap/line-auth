@@ -4,9 +4,10 @@ const express = require('express')
 const router = express.Router()
 
 router.use('/auth', require('./auth'));
+router.use('/bot', require('./bot'));
 
 router.get('/ok', (req, res) => {
 	res.send('V1 OK');
-})
+});
 
 module.exports = router

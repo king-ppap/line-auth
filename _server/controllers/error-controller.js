@@ -19,14 +19,6 @@ function errorHandler(error, response) {
       return response
         .status(404)
         .json({ error: 'not_found', message: error.message })
-    case 'OutOfStockError':
-      return response
-        .status(406)
-        .json({ error: 'bad_request', message: error.message })
-    case 'UserDuplicateError':
-      return response
-        .status(409)
-        .json({ error: 'conflict', message: error.message })
     case 'RequestLargeError':
       return response
         .status(413)

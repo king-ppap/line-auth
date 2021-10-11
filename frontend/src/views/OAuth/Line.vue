@@ -20,11 +20,11 @@
     href="https://developers.line.biz/en/docs/line-login/link-a-bot/#redirect-users/"
   >Redirect users to the LINE Login authorization URL with the bot_prompt query parameter</a>
   <hr />
-  <textarea style="width: 350px; height: 140px;">{{ fromLine }}</textarea>
+  <textarea style="width: 350px; height: 140px;" v-model="fromLine"></textarea>
   <hr />
   <div v-if="isLoading">Loading . . .</div>
   <div v-else>
-    <textarea style="width: 500px; height: 500px;">{{ loginData }}</textarea>
+    <textarea style="width: 500px; height: 500px;" v-model="showLoginData"></textarea>
   </div>
 </template>
 
@@ -44,6 +44,9 @@ export default defineComponent({
     fromLine(): string {
       return JSON.stringify(this.$route.query, null, 4);
     },
+    showLoginData(): string {
+      return JSON.stringify(this.loginData, null, 4);
+    }
   },
   async created() {
     const grantCode = this.$route.query.code;
@@ -105,7 +108,7 @@ export default defineComponent({
     callbackToBackend(code: string, state: string) {
       this.isLoading = true;
       const codeVerifier = localStorage.getItem("codeVerifier");
-      return axios.post("https://line.kingonhuy.local:3000/v1/auth/line", {
+      return axios.post("https://localhost:3000/v1/auth/line", {
         code,
         state,
         code_verifier: codeVerifier,

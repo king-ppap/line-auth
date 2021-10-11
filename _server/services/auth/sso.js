@@ -54,7 +54,7 @@ async function authLineService(request) {
   return {
     lineAccess,
     profile,
-  }
+  };
 }
 
 module.exports = {
