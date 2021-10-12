@@ -23,8 +23,14 @@
   <textarea style="width: 350px; height: 140px;" v-model="fromLine"></textarea>
   <hr />
   <div v-if="isLoading">Loading . . .</div>
-  <div v-else>
+  <div v-else style="display: grid;">
     <textarea style="width: 500px; height: 500px;" v-model="showLoginData"></textarea>
+    <hr />
+    <input v-model="loginData.profile.userId" placeholder="User ID">
+    <textarea style="width: 300px; height: 100px;" v-model="message"></textarea>
+    <button @click="sendLineMessage">Sent</button>
+    <br />
+    <div v-if="isSend">Sended</div>
   </div>
 </template>
 
@@ -32,12 +38,26 @@
 import { defineComponent } from "vue";
 import axios from "axios";
 
+interface LoginData {
+  profile: {
+    userId: string,
+  },
+  code: object,
+}
+
 export default defineComponent({
   data() {
     return {
       error: "",
-      loginData: {},
+      loginData: {
+        profile: {
+          userId: "",
+        },
+        code: {}
+      } as LoginData,
       isLoading: false,
+      message: "",
+      isSend: false,
     }
   },
   computed: {
@@ -46,9 +66,9 @@ export default defineComponent({
     },
     showLoginData(): string {
       return JSON.stringify(this.loginData, null, 4);
-    }
+    },
   },
-  async created() {
+  async mounted() {
     const grantCode = this.$route.query.code;
     const state = this.$route.query.state;
     if (grantCode) {
@@ -94,7 +114,8 @@ export default defineComponent({
           code_challenge,
           code_challenge_method: "S256",
           response_type: "code",
-          client_id: "1656499349",
+          // client_id: "1656499349",
+          client_id: "1656395956",
           redirect_uri: "https://line.kingonhuy.local:8080/auth/line",
           scope: "profile openid",
           bot_prompt: "aggressive",
@@ -120,6 +141,23 @@ export default defineComponent({
       }).finally(() => {
         this.isLoading = false;
       })
+    },
+    sendLineMessage() {
+      let msg = JSON.parse(this.message);
+      if (!this.loginData.profile.userId) {
+        console.error("No user id");
+        return;
+      }
+      return axios.post("https://localhost:3000/v1/bot/line/send", {
+        to: this.loginData.profile.userId,
+        message: msg,
+      })
+        .then(response => {
+          console.log(response.data);
+        })
+        .catch(error => {
+          console.error(error.response.data);
+        })
     },
   }
 });

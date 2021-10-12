@@ -6,10 +6,15 @@ const client = new line.Client({
 });
 
 async function sendMessageLineService(request) {
-  const {
+  let {
     to,
     message,
   } = request.body;
+  console.log(request.body, message);
+  if ((typeof message) != "object") {
+    message = JSON.parse(message);
+  }
+
   const response = await client.pushMessage(to, message)
     .then((e) => {
       console.log(e);
@@ -18,9 +23,11 @@ async function sendMessageLineService(request) {
       };
     })
     .catch((error) => {
+      console.error(error.stack);
+      console.error(error.originalError);
       throw new APIError("InvalidRequestError", "Error on pushing message.", {
         isSend: false,
-        error,
+        error: error.originalError.response.data,
       });
     });
   return response;
