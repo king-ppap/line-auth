@@ -86,6 +86,16 @@ async function getUserLineProfileService(request) {
 }
 
 async function getBotFollowersIdsService(request) {
+  const {
+    id,
+    secret,
+  } = request.body;
+  const channelAccessToken = await getAccessTokenLineService(request, id, secret);
+
+  let client = new Line.Client({
+    channelAccessToken: channelAccessToken.access_token,
+  });
+
   return await client.getBotFollowersIds()
     .then((data) => {
       console.log(data);
@@ -93,7 +103,6 @@ async function getBotFollowersIdsService(request) {
     })
     .catch((error) => {
       throw new APIError("InvalidRequestError", "Error: get bot followers IDs.", {
-        isSend: false,
         error: error.originalError.response.data,
       });
     });
