@@ -79,7 +79,6 @@ async function getUserLineProfileService(request) {
     })
     .catch((error) => {
       throw new APIError("InvalidRequestError", "Error: getting user Line profile.", {
-        isSend: false,
         error: error.originalError.response.data,
       });
     });
