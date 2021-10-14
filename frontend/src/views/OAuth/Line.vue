@@ -26,14 +26,14 @@
   <div v-else style="display: grid;">
     <textarea style="width: 500px; height: 500px;" v-model="showLoginData"></textarea>
     <hr />
-    <input v-model="userId" placeholder="User ID">
-    <textarea style="width: 300px; height: 100px;" v-model="message"></textarea>
-    <button @click="sendLineMessage">Sent</button>
+    <input v-model="userId" placeholder="User ID" />
+    <textarea style="height: 100px;" v-model="message" :disabled="loading.sedingMsg"></textarea>
+    <button @click="sendLineMessage" :disabled="loading.sedingMsg">Sent</button>
     <br />
     <div v-if="isSend">Sended</div>
     <hr />
-    <textarea style="height: 100px;" v-model="profileData"></textarea>
-    <button @click="getUserLineProfile">Profile</button>
+    <textarea style="height: 100px;" v-model="profileData" :disabled="loading.getUserLineProfile"></textarea>
+    <button @click="getUserLineProfile" :disabled="loading.getUserLineProfile">Profile</button>
   </div>
 </template>
 
@@ -54,10 +54,183 @@ export default defineComponent({
       error: "",
       loginData: {} as LoginData,
       isLoading: false,
-      message: "",
+      message: `{
+"type": "flex",
+"altText": "ฮันแน่",
+"contents": {
+  "type": "bubble",
+  "direction": "ltr",
+  "hero": {
+    "type": "image",
+    "url": "https://cdn.discordapp.com/emojis/719791654227410944.gif?size=240",
+    "size": "full",
+    "aspectRatio": "20:13",
+    "aspectMode": "cover",
+    "action": {
+      "type": "uri",
+      "label": "Line",
+      "uri": "https://linecorp.com/"
+    }
+  },
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": "Brown Cafe",
+        "weight": "bold",
+        "size": "xl",
+        "contents": []
+      },
+      {
+        "type": "box",
+        "layout": "baseline",
+        "margin": "md",
+        "contents": [
+          {
+            "type": "icon",
+            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+            "size": "sm"
+          },
+          {
+            "type": "icon",
+            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+            "size": "sm"
+          },
+          {
+            "type": "icon",
+            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+            "size": "sm"
+          },
+          {
+            "type": "icon",
+            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+            "size": "sm"
+          },
+          {
+            "type": "icon",
+            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gray_star_28.png",
+            "size": "sm"
+          },
+          {
+            "type": "text",
+            "text": "4.0",
+            "size": "sm",
+            "color": "#999999",
+            "flex": 0,
+            "margin": "md",
+            "contents": []
+          }
+        ]
+      },
+      {
+        "type": "box",
+        "layout": "vertical",
+        "spacing": "sm",
+        "margin": "lg",
+        "contents": [
+          {
+            "type": "box",
+            "layout": "baseline",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "Place",
+                "size": "sm",
+                "color": "#AAAAAA",
+                "flex": 1,
+                "contents": []
+              },
+              {
+                "type": "text",
+                "text": "Miraina Tower, 4-1-6 Shinjuku, Tokyo",
+                "size": "sm",
+                "color": "#666666",
+                "flex": 5,
+                "wrap": true,
+                "contents": []
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "baseline",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "Time",
+                "size": "sm",
+                "color": "#AAAAAA",
+                "flex": 1,
+                "contents": []
+              },
+              {
+                "type": "text",
+                "text": "10:00 - 23:00",
+                "size": "sm",
+                "color": "#666666",
+                "flex": 5,
+                "wrap": true,
+                "contents": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "type": "box",
+    "layout": "vertical",
+    "flex": 0,
+    "spacing": "sm",
+    "contents": [
+      {
+        "type": "button",
+        "action": {
+          "type": "uri",
+          "label": "CALL",
+          "uri": "https://linecorp.com"
+        },
+        "color": "#28C2F3FF",
+        "height": "sm",
+        "style": "primary",
+        "gravity": "top"
+      },
+      {
+        "type": "button",
+        "action": {
+          "type": "uri",
+          "label": "WEBSITE",
+          "uri": "https://linecorp.com"
+        },
+        "color": "#819EF1FF",
+        "margin": "md",
+        "style": "link"
+      },
+      {
+        "type": "spacer"
+      }
+    ]
+  },
+  "styles": {
+    "footer": {
+      "backgroundColor": "#F4FBFFFF",
+      "separatorColor": "#AA1414FF"
+    }
+  }
+}
+}`,
       isSend: false,
       profile: {},
       userId: "",
+      loading: {
+        sedingMsg: false,
+        getUserLineProfile: false,
+      }
     }
   },
   computed: {
@@ -76,7 +249,7 @@ export default defineComponent({
     const state = this.$route.query.state;
     if (grantCode) {
       this.loginData = await this.callbackToBackend(grantCode + "", state + "");
-      if (this.loginData.profile.userId) {
+      if (this.loginData.profile?.userId) {
         this.userId = this.loginData.profile.userId;
       }
     }
@@ -154,6 +327,7 @@ export default defineComponent({
         console.error("No user id");
         return;
       }
+      this.loading.sedingMsg = true;
       return axios.post("https://localhost:3000/v1/bot/line/send", {
         to: this.userId,
         message: msg,
@@ -164,12 +338,16 @@ export default defineComponent({
         .catch(error => {
           console.error(error.response.data);
         })
+        .finally(() => {
+          this.loading.sedingMsg = false;
+        });
     },
     getUserLineProfile() {
       if (!this.userId) {
         console.error("No user id");
         return;
       }
+      this.loading.getUserLineProfile = true;
       return axios.post("https://localhost:3000/v1/bot/line/profile", {
         userId: this.userId,
       })
@@ -179,7 +357,11 @@ export default defineComponent({
         })
         .catch(error => {
           console.error(error.response.data);
+          this.profile = error.response.data;
         })
+        .finally(() => {
+          this.loading.getUserLineProfile = false;
+        });
     },
   }
 });

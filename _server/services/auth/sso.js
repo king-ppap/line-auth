@@ -1,6 +1,6 @@
 const qs = require('qs');
-
 const axios = require("axios");
+
 const APIError = require('../../errors/api-error');
 
 async function authLineService(request) {
@@ -35,7 +35,7 @@ async function authLineService(request) {
   ).then((response) => {
     return response.data;
   }).catch((error) => {
-    throw new APIError("InvalidRequestError", "Error from Line token API", error.response.data);
+    throw new APIError("InvalidRequestError", "Error: Line token API", error.response.data);
   });
 
   console.log(lineAccess);
@@ -48,7 +48,7 @@ async function authLineService(request) {
   .then((response) => {
     return response.data;
   }).catch((error) => {
-    throw new APIError("InvalidRequestError", "Error from Line v2 Profile API", error.response.data);
+    throw new APIError("InvalidRequestError", "Error: Line v2 Profile API", error.response.data);
   });
 
   return {

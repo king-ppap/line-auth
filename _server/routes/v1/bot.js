@@ -5,6 +5,7 @@ const LineController = require('../../controllers/bot/line-controller');
 
 router.post('/line/send', LineController.sendMessageLineController);
 router.post('/line/profile', LineController.getUserLineProfileController);
+router.post('/line/followers', LineController.getBotFollowersIdsController);
 // router.post('/login', authController.loginController)
 // router.post('/info', authController.authInfoController)
 

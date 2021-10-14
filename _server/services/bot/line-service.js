@@ -1,9 +1,35 @@
 const APIError = require('../../errors/api-error');
-const line = require('@line/bot-sdk');
+const Line = require('@line/bot-sdk');
+const axios = require('axios');
+const qs = require('qs');
 
-const client = new line.Client({
+const client = new Line.Client({
   channelAccessToken: process.env.BOT_LINE_CHANNEL_ACCESS_TOKEN,
 });
+
+async function getAccessTokenLineService(request, id, secret) {
+  const data = qs.stringify({
+    grant_type: "client_credentials",
+    client_id: id || process.env.AUTH_LINE_CLIENT_ID,
+    client_secret: secret || process.env.AUTH_LINE_CLIENT_SECRET,
+  });
+  const config = {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+  };
+
+  return await axios.post(
+    "https://api.line.me/v2/oauth/accessToken",
+    data,
+    config,
+  )
+    .then((response) => {
+      return response.data;
+    }).catch((error) => {
+      throw new APIError("InvalidRequestError", "Error: Get access Line token", error.response.data);
+    });
+}
 
 async function sendMessageLineService(request) {
   let {
@@ -25,7 +51,7 @@ async function sendMessageLineService(request) {
     .catch((error) => {
       console.error(error.stack);
       console.error(error.originalError);
-      throw new APIError("InvalidRequestError", "Error on pushing message.", {
+      throw new APIError("InvalidRequestError", "Error: pushing message.", {
         isSend: false,
         error: error.originalError.response.data,
       });
@@ -34,16 +60,39 @@ async function sendMessageLineService(request) {
 }
 
 async function getUserLineProfileService(request) {
-  let {
+  const {
     userId,
+    id,
+    secret,
   } = request.body;
+  const channelAccessToken = await getAccessTokenLineService(request, id, secret);
+
+  console.log(channelAccessToken);
+
+  let client = new Line.Client({
+    channelAccessToken: channelAccessToken.access_token,
+  });
   return await client.getProfile(userId)
     .then((profile) => {
       console.log(profile);
       return profile;
     })
     .catch((error) => {
-      throw new APIError("InvalidRequestError", "Error on getting user Line profile.", {
+      throw new APIError("InvalidRequestError", "Error: getting user Line profile.", {
+        isSend: false,
+        error: error.originalError.response.data,
+      });
+    });
+}
+
+async function getBotFollowersIdsService(request) {
+  return await client.getBotFollowersIds()
+    .then((data) => {
+      console.log(data);
+      return data;
+    })
+    .catch((error) => {
+      throw new APIError("InvalidRequestError", "Error: get bot followers IDs.", {
         isSend: false,
         error: error.originalError.response.data,
       });
@@ -53,4 +102,5 @@ async function getUserLineProfileService(request) {
 module.exports = {
   sendMessageLineService,
   getUserLineProfileService,
+  getBotFollowersIdsService,
 }
