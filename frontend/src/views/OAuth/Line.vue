@@ -26,11 +26,14 @@
   <div v-else style="display: grid;">
     <textarea style="width: 500px; height: 500px;" v-model="showLoginData"></textarea>
     <hr />
-    <input v-model="loginData.profile.userId" placeholder="User ID">
+    <input v-model="userId" placeholder="User ID">
     <textarea style="width: 300px; height: 100px;" v-model="message"></textarea>
     <button @click="sendLineMessage">Sent</button>
     <br />
     <div v-if="isSend">Sended</div>
+    <hr />
+    <textarea style="height: 100px;" v-model="profileData"></textarea>
+    <button @click="getUserLineProfile">Profile</button>
   </div>
 </template>
 
@@ -49,15 +52,12 @@ export default defineComponent({
   data() {
     return {
       error: "",
-      loginData: {
-        profile: {
-          userId: "",
-        },
-        code: {}
-      } as LoginData,
+      loginData: {} as LoginData,
       isLoading: false,
       message: "",
       isSend: false,
+      profile: {},
+      userId: "",
     }
   },
   computed: {
@@ -67,12 +67,18 @@ export default defineComponent({
     showLoginData(): string {
       return JSON.stringify(this.loginData, null, 4);
     },
+    profileData(): string {
+      return JSON.stringify(this.profile, null, 4);
+    }
   },
   async mounted() {
     const grantCode = this.$route.query.code;
     const state = this.$route.query.state;
     if (grantCode) {
       this.loginData = await this.callbackToBackend(grantCode + "", state + "");
+      if (this.loginData.profile.userId) {
+        this.userId = this.loginData.profile.userId;
+      }
     }
   },
   methods: {
@@ -140,20 +146,36 @@ export default defineComponent({
         return error.response.data;
       }).finally(() => {
         this.isLoading = false;
-      })
+      });
     },
     sendLineMessage() {
       let msg = JSON.parse(this.message);
-      if (!this.loginData.profile.userId) {
+      if (!this.userId) {
         console.error("No user id");
         return;
       }
       return axios.post("https://localhost:3000/v1/bot/line/send", {
-        to: this.loginData.profile.userId,
+        to: this.userId,
         message: msg,
       })
         .then(response => {
           console.log(response.data);
+        })
+        .catch(error => {
+          console.error(error.response.data);
+        })
+    },
+    getUserLineProfile() {
+      if (!this.userId) {
+        console.error("No user id");
+        return;
+      }
+      return axios.post("https://localhost:3000/v1/bot/line/profile", {
+        userId: this.userId,
+      })
+        .then(response => {
+          console.log(response.data);
+          this.profile = response.data;
         })
         .catch(error => {
           console.error(error.response.data);

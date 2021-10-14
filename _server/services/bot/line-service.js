@@ -33,6 +33,24 @@ async function sendMessageLineService(request) {
   return response;
 }
 
+async function getUserLineProfileService(request) {
+  let {
+    userId,
+  } = request.body;
+  return await client.getProfile(userId)
+    .then((profile) => {
+      console.log(profile);
+      return profile;
+    })
+    .catch((error) => {
+      throw new APIError("InvalidRequestError", "Error on getting user Line profile.", {
+        isSend: false,
+        error: error.originalError.response.data,
+      });
+    });
+}
+
 module.exports = {
   sendMessageLineService,
+  getUserLineProfileService,
 }
