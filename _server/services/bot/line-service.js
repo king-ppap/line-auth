@@ -35,13 +35,23 @@ async function sendMessageLineService(request) {
   let {
     to,
     message,
+    id,
+    secret,
   } = request.body;
+  const channelAccessToken = await getAccessTokenLineService(request, id, secret);
+
+  console.log(channelAccessToken);
+
+  let client = new Line.Client({
+    channelAccessToken: channelAccessToken.access_token,
+  });
+
   console.log(request.body, message);
   if ((typeof message) != "object") {
     message = JSON.parse(message);
   }
 
-  const response = await client.pushMessage(to, message)
+  return await client.pushMessage(to, message)
     .then((e) => {
       console.log(e);
       return {
@@ -56,7 +66,6 @@ async function sendMessageLineService(request) {
         error: error.originalError.response.data,
       });
     });
-  return response;
 }
 
 async function getUserLineProfileService(request) {

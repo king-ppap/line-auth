@@ -27,6 +27,8 @@
     <textarea style="width: 500px; height: 500px;" v-model="showLoginData"></textarea>
     <hr />
     <input v-model="userId" placeholder="User ID" />
+    <input v-model="sendMsgLineWith.id" placeholder="Channel ID" />
+    <input v-model="sendMsgLineWith.secret" placeholder="Channal secret" />
     <textarea style="height: 100px;" v-model="message" :disabled="loading.sedingMsg"></textarea>
     <button @click="sendLineMessage" :disabled="loading.sedingMsg">Sent</button>
     <br />
@@ -56,7 +58,7 @@ export default defineComponent({
       isLoading: false,
       message: `{
 "type": "flex",
-"altText": "ฮันแน่",
+"altText": "ฮันแน่ KingOnHuy เอง",
 "contents": {
   "type": "bubble",
   "direction": "ltr",
@@ -230,7 +232,11 @@ export default defineComponent({
       loading: {
         sedingMsg: false,
         getUserLineProfile: false,
-      }
+      },
+      sendMsgLineWith: {
+        id: "",
+        secret: "",
+      },
     }
   },
   computed: {
@@ -331,6 +337,8 @@ export default defineComponent({
       return axios.post("https://localhost:3000/v1/bot/line/send", {
         to: this.userId,
         message: msg,
+        id: this.sendMsgLineWith.id,
+        secret: this.sendMsgLineWith.secret,
       })
         .then(response => {
           console.log(response.data);
@@ -350,6 +358,8 @@ export default defineComponent({
       this.loading.getUserLineProfile = true;
       return axios.post("https://localhost:3000/v1/bot/line/profile", {
         userId: this.userId,
+        id: this.sendMsgLineWith.id,
+        secret: this.sendMsgLineWith.secret,
       })
         .then(response => {
           console.log(response.data);
