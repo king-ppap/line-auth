@@ -299,10 +299,10 @@ export default defineComponent({
           code_challenge,
           code_challenge_method: "S256",
           response_type: "code",
-          // client_id: "1656499349",
-          client_id: "1656395956",
+          client_id: "1656499349",
+          // client_id: "1656395956",
           redirect_uri: "https://line.kingonhuy.local:8080/auth/line",
-          scope: "profile openid",
+          scope: "profile openid email",
           bot_prompt: "aggressive",
           state: "test",
         }

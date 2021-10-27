@@ -1,13 +1,7 @@
-import { createApp } from "vue";
-import App from "./App.vue";
-import "./registerServiceWorker";
-import router from "./router";
-import store from "./store";
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -22,12 +16,11 @@ const firebaseConfig = {
   appId: "1:320510834988:web:610dcaa648a177e17a1489",
   measurementId: "G-0N2XENHD9R"
 };
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const auth = getAuth();
-auth.languageCode = 'th';
 
-createApp(App)
-  .use(store)
-  .use(router)
-  .mount("#app");
+export default {
+  install: (app, options) => {
+    // Initialize Firebase
+    app.config.globalProperties.$firebase = initializeApp(firebaseConfig);
+    app.config.globalProperties.$firebaseAnalytics = getAnalytics(app.config.globalProperties.$firebase);
+  }
+};

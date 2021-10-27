@@ -29,7 +29,7 @@ const routes: Array<RouteRecordRaw> = [
         path: "line",
         name: "AuthLine",
         component: load("OAuth/Line.vue"),
-      }
+      },
     ]
   }
   // {
