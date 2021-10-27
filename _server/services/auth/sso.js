@@ -1,7 +1,9 @@
-const qs = require('qs');
-const axios = require("axios");
+import qs from 'qs';
+import axios from "axios";
 
-const APIError = require('../../errors/api-error');
+import APIError from '../../errors/api-error.js';
+
+import FirebaseAdmin from '../../libs/firebase.js';
 
 async function authLineService(request) {
   console.log("authLineService");
@@ -45,18 +47,25 @@ async function authLineService(request) {
       Authorization: `Bearer ${lineAccess.access_token}`,
     },
   })
-  .then((response) => {
-    return response.data;
-  }).catch((error) => {
-    throw new APIError("InvalidRequestError", "Error: Line v2 Profile API", error.response.data);
-  });
+    .then((response) => {
+      return response.data;
+    }).catch((error) => {
+      throw new APIError("InvalidRequestError", "Error: Line v2 Profile API", error.response.data);
+    });
 
-  return {
+  // FirebaseAdmin.
+
+    return {
     lineAccess,
-    profile,
+      profile,
   };
+};
+
+async function authLineFirebaseService() {
+
 }
 
-module.exports = {
-  authLineService
-}
+export default  {
+  authLineService,
+  authLineFirebaseService,
+};

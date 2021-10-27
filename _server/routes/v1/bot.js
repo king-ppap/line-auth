@@ -1,7 +1,7 @@
-const express = require('express');
-const router = express.Router();
+import express from 'express';
+import LineController from '../../controllers/bot/line-controller.js';
 
-const LineController = require('../../controllers/bot/line-controller');
+const router = express.Router();
 
 router.post('/line/send', LineController.sendMessageLineController);
 router.post('/line/profile', LineController.getUserLineProfileController);
@@ -11,4 +11,4 @@ router.post('/line/followers', LineController.getBotFollowersIdsController);
 
 // router.get('/token/:token', authController.loginWebTeamController)
 
-module.exports = router;
+export default router;

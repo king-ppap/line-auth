@@ -1,12 +1,9 @@
-const express = require('express');
+import express from 'express';
+import AuthController from '../../controllers/auth/auth-controller.js';
+
 const router = express.Router();
 
-const AuthController = require('../../controllers/auth/auth-controller');
-
 router.post('/line', AuthController.authLineController);
-// router.post('/login', authController.loginController)
-// router.post('/info', authController.authInfoController)
+router.post('/firebase/line', AuthController.authLineFirebaseController);
 
-// router.get('/token/:token', authController.loginWebTeamController)
-
-module.exports = router;
+export default router;

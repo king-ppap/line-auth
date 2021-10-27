@@ -3,11 +3,13 @@
     "start": "nodemon index.js",
     "dev": "nodemon index-dev-http-mode.js --trace-warnings"
   },
+  "type": "module",
   "dependencies": {
     "@line/bot-sdk": "^7.4.0",
     "axios": "^0.22.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "firebase-admin": "^10.0.0"
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <a
-    href="https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=1656499349&redirect_uri=https://line.kingonhuy.local:8080/auth/line&state=12345abcde&scope=profile%20openid&bot_prompt=aggressive"
+    href="https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=1656499349&redirect_uri=https://sso.kingonhuy.local:8080/auth/line&state=12345abcde&scope=profile%20openid&bot_prompt=aggressive"
   >Login</a>
   <br />
   <br />
@@ -301,7 +301,7 @@ export default defineComponent({
           response_type: "code",
           client_id: "1656499349",
           // client_id: "1656395956",
-          redirect_uri: "https://line.kingonhuy.local:8080/auth/line",
+          redirect_uri: "https://sso.kingonhuy.local:8080/auth/line",
           scope: "profile openid email",
           bot_prompt: "aggressive",
           state: "test",

@@ -1,4 +1,4 @@
-function errorHandler(error, response) {
+export default function errorHandler(error, response) {
   if (!response) throw error
 
   const errType = error.name
@@ -28,8 +28,4 @@ function errorHandler(error, response) {
         .status(500)
         .json({ error: 'internal', message: error.message || 'error' })
   }
-}
-
-module.exports = {
-  errorHandler
-}
+};

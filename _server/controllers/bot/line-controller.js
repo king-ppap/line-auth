@@ -1,6 +1,6 @@
-const { expressHandler } = require('../express-handler')
+import expressHandler from '../express-handler.js';
 
-const LineService = require('../../services/bot/line-service')
+import LineService from '../../services/bot/line-service.js';
 
 async function sendMessageLineController(request) {
   return await LineService.sendMessageLineService(request);
@@ -14,7 +14,7 @@ async function getBotFollowersIdsController(request) {
   return await LineService.getBotFollowersIdsService(request);
 }
 
-module.exports = {
+export default {
   sendMessageLineController: expressHandler({
     handler: sendMessageLineController
   }),

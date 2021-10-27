@@ -1,4 +1,4 @@
-const { errorHandler, errorHandlerFV } = require('./error-controller')
+import errorHandler from './error-controller.js';
 
 function expressHandler ({ validator, handler }) {
   return async (request, response, next) => {
@@ -11,6 +11,6 @@ function expressHandler ({ validator, handler }) {
     }
   }
 }
-module.exports = {
-  expressHandler
-}
+export default {
+  expressHandler,
+};

@@ -1,24 +1,25 @@
-const express = require('express')
-const cors = require("cors")
-require('dotenv').config()
+import express from 'express';
+import cors from "cors";
 
-const { errorHandler } = require('./controllers/error-controller')
+import dotenv from 'dotenv';
+dotenv.config();
 
-const bodyParser = require('body-parser')
+import errorHandler from './controllers/error-controller.js';
 
-const app = express()
+import bodyParser from 'body-parser';
+import router from './routes/index.js';
+
+const app = express();
 try {
 	app.use(cors());
-	app.use(bodyParser.json({ limit: '25mb' }))                       //ปรับขนาด upload file | Defaults to '100kb'
-	app.use(bodyParser.urlencoded({ extended: true, limit: '25mb' }))
+	app.use(bodyParser.json({ limit: '25mb' })); //ปรับขนาด upload file | Defaults to '100kb'
+	app.use(bodyParser.urlencoded({ extended: true, limit: '25mb' }));
 
-	app.use('/', require('./routes'))
-	app.use(errorHandler)
+	app.use('/', router);
+	app.use(errorHandler);
 } catch (error) {
 	console.log(error.stack);
 	console.log('Server Error: ', error);
 }
 
-
-
-module.exports = app
+export default app;

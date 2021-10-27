@@ -1,9 +1,10 @@
-const express = require('express')
+import express from 'express';
 const router = express.Router()
 
-const cors = require('cors')
+import cors from 'cors';
+
 const whitelist = [
-  'https://line.kingonhuy.local:8080',
+  'https://sso.kingonhuy.local:8080',
 ]
 
 let corsOptions = {
@@ -18,7 +19,9 @@ let corsOptions = {
 }
 
 router.use(cors(corsOptions))
-router.use('/v1', require('./v1'))
+
+import v1 from './v1/index.js';
+router.use('/v1', v1);
 
 // 404
 router.use(function (req, res, next) {
@@ -31,4 +34,4 @@ router.use(function (err, req, res, next) {
 });
 
 
-module.exports = router
+export default router;

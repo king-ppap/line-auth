@@ -3,16 +3,10 @@
   <br />
   <button @click="loginFacebook">Login with Facebook (Popup)</button>
   <hr />
-  <textarea style="width: 350px; height: 140px;" v-model="fromLine"></textarea>
-  <hr />
   <div v-if="isLoading">Loading . . .</div>
   <div v-else style="display: grid;">
     <textarea style="width: 500px; height: 500px;" v-model="showLoginData"></textarea>
     <hr />
-    <input v-model="userId" placeholder="User ID" />
-    <hr />
-    <textarea style="height: 100px;" v-model="profileData" :disabled="loading.getUserLineProfile"></textarea>
-    <button @click="getUserLineProfile" :disabled="loading.getUserLineProfile">Profile</button>
   </div>
 </template>
 
@@ -42,10 +36,6 @@ export default defineComponent({
         sedingMsg: false,
         getUserLineProfile: false,
       },
-      sendMsgLineWith: {
-        id: "",
-        secret: "",
-      },
     }
   },
   computed: {
@@ -74,10 +64,7 @@ export default defineComponent({
       console.log("Login Facebook");
       const provider = new FacebookAuthProvider();
       // https://developers.facebook.com/docs/graph-api/reference/user/#default-public-profile-fields
-      provider.addScope("public_profile");
-      provider.addScope("email");
-      provider.addScope("user_birthday");
-      provider.addScope("user_gender");
+      // provider.addScope("public_profile");
 
       const auth = getAuth();
       this.loginData = await signInWithPopup(auth, provider)
@@ -111,45 +98,6 @@ export default defineComponent({
             email,
             credential,
           };
-        });
-    },
-    callbackToBackend(code: string, state: string) {
-      this.isLoading = true;
-      const codeVerifier = localStorage.getItem("codeVerifier");
-      return axios.post("https://localhost:3000/v1/auth/line", {
-        code,
-        state,
-        code_verifier: codeVerifier,
-      }).then((response) => {
-        return response.data;
-      }).catch((error) => {
-        this.error = error.response.data;
-        return error.response.data;
-      }).finally(() => {
-        this.isLoading = false;
-      });
-    },
-    getUserLineProfile() {
-      if (!this.userId) {
-        console.error("No user id");
-        return;
-      }
-      this.loading.getUserLineProfile = true;
-      return axios.post("https://localhost:3000/v1/bot/line/profile", {
-        userId: this.userId,
-        id: this.sendMsgLineWith.id,
-        secret: this.sendMsgLineWith.secret,
-      })
-        .then(response => {
-          console.log(response.data);
-          this.profile = response.data;
-        })
-        .catch(error => {
-          console.error(error.response.data);
-          this.profile = error.response.data;
-        })
-        .finally(() => {
-          this.loading.getUserLineProfile = false;
         });
     },
   }

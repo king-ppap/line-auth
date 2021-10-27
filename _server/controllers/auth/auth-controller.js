@@ -1,21 +1,22 @@
-const { expressHandler } = require('../express-handler')
+import expressHandler from '../express-handler.js';
 
 // const jwt = require('jsonwebtoken')
 // const ConnectDB = require('../database').connectionFoodStory
-const SsoAuth = require('../../services/auth/sso')
+import SsoAuth from '../../services/auth/sso.js';
 
 async function authLineController(request) {
   return await SsoAuth.authLineService(request);
 };
 
-module.exports = {
-  // loginController: expressHandler({
-  //     handler: loginController
-  // }),
+async function authLineFirebaseController(request) {
+  return await SsoAuth.authLineFirebaseService(request);
+};
+
+export default {
   authLineController: expressHandler({
     handler: authLineController
   }),
-  // loginWebTeamController: expressHandler({
-  //     handler: loginWebTeamController
-  // }),
+  authLineFirebaseController: expressHandler({
+    handler: authLineFirebaseController
+  }),
 };

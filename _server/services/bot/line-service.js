@@ -1,7 +1,7 @@
-const APIError = require('../../errors/api-error');
-const Line = require('@line/bot-sdk');
-const axios = require('axios');
-const qs = require('qs');
+import APIError from '../../errors/api-error.js';
+import Line from '@line/bot-sdk';
+import axios from 'axios';
+import qs from 'qs';
 
 const client = new Line.Client({
   channelAccessToken: process.env.BOT_LINE_CHANNEL_ACCESS_TOKEN,
@@ -116,8 +116,8 @@ async function getBotFollowersIdsService(request) {
     });
 }
 
-module.exports = {
+export default {
   sendMessageLineService,
   getUserLineProfileService,
   getBotFollowersIdsService,
-}
+};
