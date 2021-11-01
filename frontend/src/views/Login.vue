@@ -20,6 +20,7 @@
     <hr width="500px" />
     <h4>Firebase User Data</h4>
     <button @click="linkFacebook" :disabled="!isLogin">Link Facebook</button>
+    <button @click="unlinkFacebook" :disabled="!isLogin">Unlink Facebook</button>
     <textarea style="width: 100%; height: 300px;" v-model="profileData" disabled></textarea>
     <hr width="500px" />
   </div>
@@ -38,6 +39,7 @@ import {
   PhoneAuthProvider,
   signInWithCredential,
   linkWithPopup,
+  unlink,
 } from "firebase/auth";
 
 import axios from "axios";
@@ -156,6 +158,8 @@ export default defineComponent({
           return error;
         })
         .finally(() => {
+          console.log("recaptchaVerifier.clear");
+
           this.recaptchaVerifier.clear();
           this.removeReCaptcha();
         });
@@ -174,6 +178,7 @@ export default defineComponent({
 
         })
         .finally(() => {
+          console.log("recaptchaVerifier.clear");
           this.recaptchaVerifier.clear();
         });
     },
@@ -226,13 +231,27 @@ export default defineComponent({
           // Accounts successfully linked.
           const credential = FacebookAuthProvider.credentialFromResult(result);
           console.log(credential);
+          console.log(result.user);
 
           this.profile = result.user;
         }).catch((error) => {
           // Handle Errors here.
           console.error(error);
-
         });
+    },
+    unlinkFacebook() {
+      const auth = getAuth();
+      if (auth.currentUser) {
+        unlink(auth.currentUser, "facebook.com")
+          .then((data) => {
+            this.profile = data;
+            console.log("Unlinked !!!", data);
+          }).catch((error) => {
+            console.error(error);
+          });
+      } else {
+        console.warn("not log in yet");
+      }
     },
   }
 });
