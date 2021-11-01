@@ -1,4 +1,4 @@
-import expressHandler from '../express-handler.js';
+import { expressHandler } from '../express-handler.js';
 
 // const jwt = require('jsonwebtoken')
 // const ConnectDB = require('../database').connectionFoodStory

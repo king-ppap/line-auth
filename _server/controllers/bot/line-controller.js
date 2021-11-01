@@ -1,4 +1,4 @@
-import expressHandler from '../express-handler.js';
+import { expressHandler } from '../express-handler.js';
 
 import LineService from '../../services/bot/line-service.js';
 

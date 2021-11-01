@@ -3,10 +3,6 @@ import Line from '@line/bot-sdk';
 import axios from 'axios';
 import qs from 'qs';
 
-const client = new Line.Client({
-  channelAccessToken: process.env.BOT_LINE_CHANNEL_ACCESS_TOKEN,
-});
-
 async function getAccessTokenLineService(request, id, secret) {
   const data = qs.stringify({
     grant_type: "client_credentials",

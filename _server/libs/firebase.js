@@ -3,10 +3,10 @@ import FirebaseAdmin from "firebase-admin";
 
 import fs from 'fs';
 
-const serviceAccount = fs.readFileSync('../key/firebase.json');
-console.log(serviceAccount);
+const serviceAccount = fs.readFileSync('./key/firebase.json');
+console.log(serviceAccount.toString('utf8'));
 FirebaseAdmin.initializeApp({
-  credential: FirebaseAdmin.credential.cert(serviceAccount),
+  credential: FirebaseAdmin.credential.cert('./key/firebase.json'),
 });
 
 export default FirebaseAdmin;

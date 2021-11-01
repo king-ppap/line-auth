@@ -11,6 +11,6 @@ function expressHandler ({ validator, handler }) {
     }
   }
 }
-export default {
+export {
   expressHandler,
 };
