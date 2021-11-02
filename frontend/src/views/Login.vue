@@ -36,8 +36,8 @@ import {
   onAuthStateChanged,
   RecaptchaVerifier,
   signInWithPhoneNumber,
-  PhoneAuthProvider,
-  signInWithCredential,
+  // PhoneAuthProvider,
+  // signInWithCredential,
   linkWithPopup,
   unlink,
 } from "firebase/auth";
@@ -185,15 +185,13 @@ export default defineComponent({
 
     },
     confirmOTP() {
-      // https://firebase.google.com/docs/auth/web/phone-auth#get-the-intermediate-authcredential-object
-      console.log(this.otpInput);
-
-      const credential = PhoneAuthProvider.credential(this.confirmationResult.verificationId, this.otpInput);
-      signInWithCredential(getAuth(), credential)
-        .then((data) => {
+      // https://firebase.google.com/docs/auth/web/phone-auth#send-a-verification-code-to-the-users-phone
+      console.log(this.otpInput, this.confirmationResult);
+      this.confirmationResult.confirm(this.otpInput)
+        .then((data: any) => {
           console.log("confirmOTP", data);
         })
-        .catch((error) => {
+        .catch((error: any) => {
           console.error("confirmOTP", error);
 
         })
@@ -201,6 +199,20 @@ export default defineComponent({
           console.log("recaptchaVerifier.clear");
           this.recaptchaVerifier.clear();
         });
+
+      // const credential = PhoneAuthProvider.credential(this.confirmationResult.verificationId, this.otpInput);
+      // signInWithCredential(getAuth(), credential)
+      //   .then((data) => {
+      //     console.log("confirmOTP", data);
+      //   })
+      //   .catch((error) => {
+      //     console.error("confirmOTP", error);
+
+      //   })
+      //   .finally(() => {
+      //     console.log("recaptchaVerifier.clear");
+      //     this.recaptchaVerifier.clear();
+      //   });
     },
     async loginFacebook() {
       console.log("Login Facebook");
