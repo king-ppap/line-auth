@@ -5,11 +5,11 @@
   <div v-if="!isLogin">
     <button @click="loginFacebook">Login with Facebook (Popup)</button>
     <hr />
-    <input type="text" placeholder="Phone number" :v-model="phoneNumber" value="+66 88 888 8888" />
+    <input type="text" placeholder="Phone number" v-model="phoneNumber" />
     <button @click="loginPhone">Login with Phone</button>
     <br />
     <p>{{ confirmationResult }}</p>
-    <input type="text" placeholder="OTP" :v-model="otpInput" :value="otpInput" />
+    <input type="text" placeholder="OTP" v-model="otpInput" />
     <button @click="confirmOTP">Confirm</button>
   </div>
   <hr />
@@ -58,6 +58,7 @@ export default defineComponent({
         getUserLineProfile: false,
       },
       isLogin: false,
+      isRecaptchaInited: false,
       recaptchaVerifier: {} as RecaptchaVerifier,
       phoneNumber: "+66888888888",
       confirmationResult: {} as any,
@@ -75,17 +76,18 @@ export default defineComponent({
   async mounted() {
     const auth = getAuth();
     auth.languageCode = 'th';
-    this.initRecaptcha();
 
+    const cssLog = "background: #222; color: #ff8d00";
     onAuthStateChanged(auth, (user) => {
       this.profile = user ?? {};
       if (user) {
-        console.log("Loged IN", user);
+        console.log("%cLoged IN", cssLog);
         this.isLogin = true;
       } else {
-        console.log("Loged OUT");
+        console.log("%cLoged OUT", cssLog);
         this.isLogin = false;
       }
+      console.log(user);
     })
   },
   methods: {
@@ -109,27 +111,41 @@ export default defineComponent({
     },
     async initRecaptcha() {
       const auth = getAuth();
-      console.log(this.recaptchaVerifier);
 
-      this.removeReCaptcha();
+      console.log("initRecaptcha isRecaptchaInited");
+      if (this.isRecaptchaInited) {
+        console.log("is Recaptcha Inited");
+        // this.removeReCaptcha();
+        this.recaptchaVerifier.render()
+          .then((data) => {
+            console.log(data);
 
-      // if (this.recaptchaVerifier != {}) {
-      //   this.recaptchaVerifier.clear();
-      // }
+          })
+          .catch((error) => {
+            console.error(error);
+
+          });
+        return this.recaptchaVerifier;
+      }
       console.log("initRecaptcha");
+      try {
+        this.recaptchaVerifier = new RecaptchaVerifier('recaptcha-element', {
+          'size': 'invisible',
+          'callback': (response: any) => {
+            // reCAPTCHA solved, allow signInWithPhoneNumber.
+            // onSignInSubmit();
+            console.log("recaptchaVerifier", response);
+          },
+          'expired-callback': () => {
+            // Response expired. Ask user to solve reCAPTCHA again.
+            console.warn("recaptchaVerifier expired-callback");
+          },
+        }, auth);
+        this.isRecaptchaInited = true;
+      } catch (error) {
+        console.error("initRecaptcha", error);
+      }
 
-      this.recaptchaVerifier = new RecaptchaVerifier('recaptcha-element', {
-        'size': 'invisible',
-        'callback': (response: any) => {
-          // reCAPTCHA solved, allow signInWithPhoneNumber.
-          // onSignInSubmit();
-          console.log("recaptchaVerifier", response);
-        },
-        'expired-callback': () => {
-          // Response expired. Ask user to solve reCAPTCHA again.
-          console.log("recaptchaVerifier expired-callback");
-        },
-      }, auth);
       console.log("initRecaptcha");
       return this.recaptchaVerifier;
     },
@@ -139,30 +155,34 @@ export default defineComponent({
       const auth = getAuth();
       console.log("recaptchaApp");
       const recaptchaApp = await this.initRecaptcha();
-      console.log(this.phoneNumber, this.recaptchaVerifier);
+      console.log(this.phoneNumber);
 
-      this.loginData = await signInWithPhoneNumber(auth, this.phoneNumber, this.recaptchaVerifier)
-        .then((confirmationResult) => {
-          // SMS sent. Prompt user to type the code from the message, then sign the
-          // user in with confirmationResult.confirm(code).
-          this.confirmationResult = confirmationResult;
-          this.recaptchaVerifier.clear();
-          this.removeReCaptcha();
-          return confirmationResult;
-        })
-        .catch((error) => {
-          // Error; SMS not sent
-          console.warn("SMS not sent", error);
-          // grecaptcha.reset();
-          // this.recaptchaVerifier.render();
-          return error;
-        })
-        .finally(() => {
-          console.log("recaptchaVerifier.clear");
+      try {
+        this.loginData = await signInWithPhoneNumber(auth, this.phoneNumber, recaptchaApp)
+          .then((confirmationResult) => {
+            // SMS sent. Prompt user to type the code from the message, then sign the
+            // user in with confirmationResult.confirm(code).
+            console.log("DONE PHONE");
 
-          this.recaptchaVerifier.clear();
-          this.removeReCaptcha();
-        });
+            this.confirmationResult = confirmationResult;
+            return confirmationResult;
+          })
+          .catch((error) => {
+            // Error; SMS not sent
+            console.warn("SMS not sent", error);
+            return error;
+          })
+          .finally(() => {
+            console.log("recaptchaVerifier.clear");
+            // grecaptcha.reset();
+            // this.removeReCaptcha();
+            // this.recaptchaVerifier.clear();
+          });
+      } catch (error) {
+        console.error("loginPhone", error);
+
+      }
+
     },
     confirmOTP() {
       // https://firebase.google.com/docs/auth/web/phone-auth#get-the-intermediate-authcredential-object
