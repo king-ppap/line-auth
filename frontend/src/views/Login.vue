@@ -3,7 +3,20 @@
   <button @click="logout" :disabled="!isLogin">Logout</button>
   <hr />
   <div v-if="!isLogin">
-    <button @click="loginFacebook">Login with Facebook (Popup)</button>
+    <p>Create Email</p>
+    <input v-model="email" type="email" placeholder="Email" />
+    <input v-model="password" type="password" placeholder="Password" />
+    <button @click="createEmail">Crate and Login</button>
+
+    <p>Login Email</p>
+    <input v-model="email" type="email" placeholder="Email" />
+    <input v-model="password" type="password" placeholder="Password" />
+    <button @click="loginEmail">Login</button>
+    <button @click="sendPasswordResetEmail">Reset password</button>
+
+    <p>Login (Popup)</p>
+    <button @click="loginProviders('facebook.com')">Facebook</button>
+    <button @click="loginProviders('github.com')">Github</button>
     <hr />
     <input type="text" placeholder="Phone number" v-model="phoneNumber" />
     <button @click="loginPhone">Login with Phone</button>
@@ -19,8 +32,16 @@
     <textarea style="width: 100%; height: 200px;" v-model="showLoginData" disabled></textarea>
     <hr width="500px" />
     <h4>Firebase User Data</h4>
-    <button @click="linkFacebook" :disabled="!isLogin">Link Facebook</button>
-    <button @click="unlinkFacebook" :disabled="!isLogin">Unlink Facebook</button>
+    <button @click="sendVerifyEmail" :disabled="!isLogin">SendEmailVerification</button>
+    <div>
+      <input v-model="newPassword" placeholder="New password" :disabled="!isLogin" />
+      <button @click="updatePassword" :disabled="!isLogin">Update Password</button>
+    </div>
+    <hr width="500px" />
+    <div v-for="(value, key) in providerList" :key="key" style="display: flex;">
+      <button @click="linkProviders(value)" :disabled="!isLogin">Link {{ key }}</button>
+      <button @click="unlinkProviders(value)" :disabled="!isLogin">Unlink {{ key }}</button>
+    </div>
     <textarea style="width: 100%; height: 300px;" v-model="profileData" disabled></textarea>
     <hr width="500px" />
   </div>
@@ -29,6 +50,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import {
+  GithubAuthProvider,
   FacebookAuthProvider,
   getAuth,
   signInWithPopup,
@@ -36,10 +58,15 @@ import {
   onAuthStateChanged,
   RecaptchaVerifier,
   signInWithPhoneNumber,
+  signInWithEmailAndPassword,
   // PhoneAuthProvider,
   // signInWithCredential,
   linkWithPopup,
   unlink,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  updatePassword,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 
 import axios from "axios";
@@ -57,13 +84,22 @@ export default defineComponent({
         sedingMsg: false,
         getUserLineProfile: false,
       },
+      email: "",
+      password: "",
+      newPassword: "",
       isLogin: false,
       isRecaptchaInited: false,
       recaptchaVerifier: {} as RecaptchaVerifier,
       phoneNumber: "+66888888888",
       confirmationResult: {} as any,
       otpInput: "888888",
-    }
+      providerList: {
+        "Facebook": "facebook.com",
+        "Github": "github.com",
+        "Phone": "phone",
+        "Password": "password",
+      },
+    };
   },
   computed: {
     showLoginData(): string {
@@ -180,9 +216,7 @@ export default defineComponent({
           });
       } catch (error) {
         console.error("loginPhone", error);
-
       }
-
     },
     confirmOTP() {
       // https://firebase.google.com/docs/auth/web/phone-auth#send-a-verification-code-to-the-users-phone
@@ -193,7 +227,6 @@ export default defineComponent({
         })
         .catch((error: any) => {
           console.error("confirmOTP", error);
-
         })
         .finally(() => {
           console.log("recaptchaVerifier.clear");
@@ -214,55 +247,136 @@ export default defineComponent({
       //     this.recaptchaVerifier.clear();
       //   });
     },
-    async loginFacebook() {
-      console.log("Login Facebook");
-      const provider = new FacebookAuthProvider();
+    async createEmail() {
+      const auth = getAuth();
+      this.loginData = await createUserWithEmailAndPassword(auth, this.email, this.password)
+        .then((userCredential) => {
+          // Signed in 
+          const user = userCredential.user;
+          this.profile = user;
+          return userCredential;
+        })
+        .catch((error) => {
+          this.profile = {};
+          return error;
+        });
+
+    },
+    async loginEmail() {
+      // https://firebase.google.com/docs/auth/web/password-auth#create_a_password-based_account
+      const auth = getAuth();
+      this.loginData = await signInWithEmailAndPassword(auth, this.email, this.password)
+        .then((userCredential) => {
+          // Signed in 
+          const user = userCredential.user;
+          this.profile = user;
+          return userCredential;
+        })
+        .catch((error) => {
+          this.profile = {};
+          return error;
+        });
+
+    },
+    sendPasswordResetEmail() {
+      const auth = getAuth();
+      sendPasswordResetEmail(auth, this.email)
+        .then(() => {
+          // Password reset email sent!
+          console.log("Password reset email sent!");
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    sendVerifyEmail() {
+      // https://firebase.google.com/docs/auth/web/manage-users#send_a_user_a_verification_email
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (user) {
+        sendEmailVerification(user)
+          .then(() => {
+            // Email verification sent!
+            console.log("Email send !!!");
+          });
+      }
+    },
+    updatePassword() {
+      // https://firebase.google.com/docs/auth/web/manage-users#set_a_users_password
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (user) {
+        updatePassword(user, this.newPassword)
+          .then(() => {
+            // Update successful.
+            console.log("Update Password successful");
+          }).catch((error) => {
+            // https://firebase.google.com/docs/reference/js/v8/firebase.User#updateemail
+            console.error(error);
+          });
+      }
+    },
+    getProviderObj(name: string): any {
+      switch (name) {
+        case "github.com":
+          return new GithubAuthProvider();
+        case "facebook.com":
+        default:
+          return new FacebookAuthProvider();
+      }
+    },
+    async loginProviders(providerName: string) {
+      console.log(`Login ${providerName}`);
+      const providerObj = this.getProviderObj(providerName);
       // https://developers.facebook.com/docs/graph-api/reference/user/#default-public-profile-fields
-      // provider.addScope("public_profile");
+      // providerObj.addScope("public_profile");
 
       const auth = getAuth();
-      this.loginData = await signInWithPopup(auth, provider)
+      this.loginData = await signInWithPopup(auth, providerObj)
         .then((result) => {
           // The signed-in user info.
           const user = result.user;
+          this.profile = user;
           console.log(user);
 
           // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-          const credential = FacebookAuthProvider.credentialFromResult(result);
-          const accessToken = credential?.accessToken;
-          console.log(accessToken);
+          // const credential = providerObj.credentialFromResult(result);
+          // const accessToken = credential?.accessToken;
+          // console.log(accessToken);
           return {
-            credential,
-            accessToken,
+            // credential,
+            // accessToken,
             user,
           };
         })
         .catch((error) => {
-          console.log("Error login Facebook", error);
+          console.warn(`Error Login ${providerName}`, error);
           // Handle Errors here.
           const errorCode = error.code;
           const errorMessage = error.message;
           // The email of the user's account used.
           const email = error.email;
           // The AuthCredential type that was used.
-          const credential = FacebookAuthProvider.credentialFromError(error);
+          // const credential = providerObj.credentialFromError(error);
           return {
             errorCode,
             errorMessage,
             email,
-            credential,
+            // credential,
           };
         });
     },
-    linkFacebook() {
+    linkProviders(providerName: string) {
       // https://firebase.google.com/docs/auth/web/account-linking
       const auth = getAuth();
       const currentUser = auth.currentUser;
+      const providerObj = this.getProviderObj(providerName);
+
       if (currentUser)
-        linkWithPopup(currentUser, new FacebookAuthProvider()).then((result) => {
+        linkWithPopup(currentUser, providerObj).then((result) => {
           // Accounts successfully linked.
-          const credential = FacebookAuthProvider.credentialFromResult(result);
-          console.log(credential);
+          // const credential = FacebookAuthProvider.credentialFromResult(result);
+          // console.log(credential);
           console.log(result.user);
 
           this.profile = result.user;
@@ -271,13 +385,13 @@ export default defineComponent({
           console.error(error);
         });
     },
-    unlinkFacebook() {
+    unlinkProviders(name: string) {
       const auth = getAuth();
       if (auth.currentUser) {
-        unlink(auth.currentUser, "facebook.com")
+        unlink(auth.currentUser, name)
           .then((data) => {
             this.profile = data;
-            console.log("Unlinked !!!", data);
+            console.log(`Unlinked ${name} !!!`, data);
           }).catch((error) => {
             console.error(error);
           });
