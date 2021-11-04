@@ -15,8 +15,12 @@
     <button @click="sendPasswordResetEmail">Reset password</button>
 
     <p>Login (Popup)</p>
-    <button @click="loginProviders('facebook.com')">Facebook</button>
-    <button @click="loginProviders('github.com')">Github</button>
+    <div v-for="provider in providerList" :key="provider.providerId" style="display: flex;">
+      <button
+        v-if="provider.canLink"
+        @click="loginProviders(provider.providerId)"
+      >{{ provider.name }}</button>
+    </div>
     <hr />
     <input type="text" placeholder="Phone number" v-model="phoneNumber" />
     <button @click="loginPhone">Login with Phone</button>
@@ -33,10 +37,6 @@
     <hr width="500px" />
 
     <h4>Firebase User Data</h4>
-    <div>
-      <input v-model="newPhoneNumber" placeholder="New phone number" />
-      <button @click="updatePhoneNumber">Ok</button>
-    </div>
 
     <hr width="500px" />
     <button @click="sendVerifyEmail" :disabled="!isLogin">SendEmailVerification</button>
@@ -46,10 +46,23 @@
     </div>
     <hr width="500px" />
     <p>Link with third party</p>
-    <div v-for="(value, key) in providerList" :key="key" style="display: flex;">
-      <button @click="linkProviders(value)" :disabled="!isLogin">Link {{ key }}</button>
-      <button @click="unlinkProviders(value)" :disabled="!isLogin">Unlink {{ key }}</button>
+    <div v-for="provider in providerList" :key="provider.providerId" style="display: flex;">
+      <button
+        @click="linkProviders(provider.providerId)"
+        :disabled="!(isLogin && provider.canLink)"
+      >Link {{ provider.name }}</button>
+      <button
+        @click="unlinkProviders(provider.providerId)"
+        :disabled="!isLogin"
+      >Unlink {{ provider.name }}</button>
     </div>
+
+    <div>
+      <p>Link with phone</p>
+      <input v-model="newPhoneNumber" placeholder="New phone number" />
+      <button @click="updatePhoneNumber">Ok</button>
+    </div>
+
     <div>
       <p>Link with email password</p>
       <input v-model="newEmail" placeholder="New Email" />
@@ -84,6 +97,7 @@ import {
   PhoneAuthProvider,
   updatePhoneNumber,
   EmailAuthProvider,
+  GoogleAuthProvider,
 } from "firebase/auth";
 
 import axios from "axios";
@@ -112,12 +126,33 @@ export default defineComponent({
       newPhoneNumber: "",
       confirmationResult: {} as any,
       otpInput: "888888",
-      providerList: {
-        "Facebook": "facebook.com",
-        "Github": "github.com",
-        "Phone": "phone",
-        "Password": "password",
-      },
+      providerList: [
+        {
+          name: "Google",
+          providerId: "google.com",
+          canLink: true,
+        },
+        {
+          name: "Facebook",
+          providerId: "facebook.com",
+          canLink: true,
+        },
+        {
+          name: "Github",
+          providerId: "github.com",
+          canLink: true,
+        },
+        {
+          name: "Phone",
+          providerId: "phone",
+          canLink: false,
+        },
+        {
+          name: "Password",
+          providerId: "password",
+          canLink: false,
+        },
+      ]
     };
   },
   computed: {
@@ -354,6 +389,8 @@ export default defineComponent({
     },
     getProviderObj(name: string): any {
       switch (name) {
+        case "google.com":
+          return new GoogleAuthProvider();
         case "github.com":
           return new GithubAuthProvider();
         case "facebook.com":
