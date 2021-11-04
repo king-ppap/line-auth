@@ -31,7 +31,14 @@
     <h4>Sign In Data</h4>
     <textarea style="width: 100%; height: 200px;" v-model="showLoginData" disabled></textarea>
     <hr width="500px" />
+
     <h4>Firebase User Data</h4>
+    <div>
+      <input v-model="newPhoneNumber" placeholder="New phone number" />
+      <button @click="updatePhoneNumber">Ok</button>
+    </div>
+
+    <hr width="500px" />
     <button @click="sendVerifyEmail" :disabled="!isLogin">SendEmailVerification</button>
     <div>
       <input v-model="newPassword" placeholder="New password" :disabled="!isLogin" />
@@ -59,14 +66,14 @@ import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
   signInWithEmailAndPassword,
-  // PhoneAuthProvider,
-  // signInWithCredential,
   linkWithPopup,
   unlink,
   createUserWithEmailAndPassword,
   sendEmailVerification,
   updatePassword,
   sendPasswordResetEmail,
+  PhoneAuthProvider,
+  updatePhoneNumber,
 } from "firebase/auth";
 
 import axios from "axios";
@@ -85,12 +92,14 @@ export default defineComponent({
         getUserLineProfile: false,
       },
       email: "",
+      nEmail: "",
       password: "",
       newPassword: "",
       isLogin: false,
       isRecaptchaInited: false,
       recaptchaVerifier: {} as RecaptchaVerifier,
       phoneNumber: "+66888888888",
+      newPhoneNumber: "",
       confirmationResult: {} as any,
       otpInput: "888888",
       providerList: {
@@ -218,6 +227,24 @@ export default defineComponent({
         console.error("loginPhone", error);
       }
     },
+    // https://firebase.google.com/docs/reference/js/v8/firebase.User#updatephonenumber
+    // https://firebase.google.com/docs/reference/js/v8/firebase.auth.PhoneAuthProvider
+    async updatePhoneNumber() {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (user) {
+        const provider = new PhoneAuthProvider(auth);
+        const recaptchaApp = await this.initRecaptcha();
+        const phoneCredential = await provider.verifyPhoneNumber(this.newPhoneNumber, recaptchaApp)
+          .then((verificationId) => {
+            var verificationCode = window.prompt('Please enter the verification ' +
+              'code that was sent to your mobile device.');
+            return PhoneAuthProvider.credential(verificationId,
+              verificationCode || "");
+          });
+        await updatePhoneNumber(user, phoneCredential);
+      }
+    },
     confirmOTP() {
       // https://firebase.google.com/docs/auth/web/phone-auth#send-a-verification-code-to-the-users-phone
       console.log(this.otpInput, this.confirmationResult);
@@ -260,7 +287,6 @@ export default defineComponent({
           this.profile = {};
           return error;
         });
-
     },
     async loginEmail() {
       // https://firebase.google.com/docs/auth/web/password-auth#create_a_password-based_account
