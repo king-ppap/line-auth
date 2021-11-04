@@ -45,9 +45,16 @@
       <button @click="updatePassword" :disabled="!isLogin">Update Password</button>
     </div>
     <hr width="500px" />
+    <p>Link with third party</p>
     <div v-for="(value, key) in providerList" :key="key" style="display: flex;">
       <button @click="linkProviders(value)" :disabled="!isLogin">Link {{ key }}</button>
       <button @click="unlinkProviders(value)" :disabled="!isLogin">Unlink {{ key }}</button>
+    </div>
+    <div>
+      <p>Link with email password</p>
+      <input v-model="newEmail" placeholder="New Email" />
+      <input v-model="newPassword" placeholder="New Password" />
+      <button @click="linkAnotherWithEmail">Link</button>
     </div>
     <textarea style="width: 100%; height: 300px;" v-model="profileData" disabled></textarea>
     <hr width="500px" />
@@ -67,6 +74,8 @@ import {
   signInWithPhoneNumber,
   signInWithEmailAndPassword,
   linkWithPopup,
+  linkWithCredential,
+  AuthCredential,
   unlink,
   createUserWithEmailAndPassword,
   sendEmailVerification,
@@ -74,6 +83,7 @@ import {
   sendPasswordResetEmail,
   PhoneAuthProvider,
   updatePhoneNumber,
+  EmailAuthProvider,
 } from "firebase/auth";
 
 import axios from "axios";
@@ -92,8 +102,8 @@ export default defineComponent({
         getUserLineProfile: false,
       },
       email: "",
-      nEmail: "",
       password: "",
+      newEmail: "",
       newPassword: "",
       isLogin: false,
       isRecaptchaInited: false,
@@ -392,14 +402,37 @@ export default defineComponent({
           };
         });
     },
+    // For link another Providers(Facebook, Git) to Email and new password
+    async linkAnotherWithEmail() {
+      const credential = await EmailAuthProvider.credential(this.newEmail, this.newPassword);
+      this.linkWithCredential(credential);
+    },
+    // https://firebase.google.com/docs/auth/web/account-linking#link-email-address-and-password-credentials-to-a-user-account
+    async linkWithCredential(credential: AuthCredential) {
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (user) {
+        return await linkWithCredential(user, credential)
+          .then((usercred) => {
+            const user = usercred.user;
+            this.profile = user;
+            console.log("Account linking success", user);
+            return user;
+          }).catch((error) => {
+            console.error("Account linking error", error);
+            return error;
+          });
+      }
+    },
     linkProviders(providerName: string) {
       // https://firebase.google.com/docs/auth/web/account-linking
       const auth = getAuth();
-      const currentUser = auth.currentUser;
+      const user = auth.currentUser;
       const providerObj = this.getProviderObj(providerName);
 
-      if (currentUser)
-        linkWithPopup(currentUser, providerObj).then((result) => {
+      if (user)
+        linkWithPopup(user, providerObj).then((result) => {
           // Accounts successfully linked.
           // const credential = FacebookAuthProvider.credentialFromResult(result);
           // console.log(credential);
