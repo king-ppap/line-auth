@@ -69,12 +69,12 @@ async function authLineService(request) {
   */
   // Search for existing users in our database first.
   const db = getFirestore();
-  const lineData = await db.doc(`users_line/${profile.userId}`).get()
+  const lineData = await db.doc(`users_line/line:${profile.userId}`).get()
     .then((data) => {
       return data.data();
     })
     .catch((error) => {
-      return error;
+      throw new APIError("500", "Error: Cannot get user data from Firestore", error);
     });
   console.log(lineData);
 
@@ -83,7 +83,7 @@ async function authLineService(request) {
   let firebaseUser = "ฮั่นแน่ ลืมทำไรไปปาวอะเรา";
   if (lineData) {
     firebaseUser = await getAuth()
-      .getUser(firebaseUID)
+      .getUser(`line:${profile.userId}`)
       .then((data) => {
         return data;
       })
@@ -97,7 +97,7 @@ async function authLineService(request) {
       });
   } else {
     console.log("Create new User");
-    firebaseUser = await createFirebaseUserFromLineData(profile, `line:${profile.userId}`);
+    firebaseUser = await createFirebaseUserFromLineData(profile);
     console.log("Done create");
   }
 
@@ -121,7 +121,7 @@ async function authLineService(request) {
 };
 
 async function createFirebaseUserFromLineData(userData, customUid) {
-  let uid = customUid || userData.userId;
+  let uid = customUid || `line:${userData.userId}`;
   console.log("createFirebaseUserFromLineData", uid);
   return await getAuth()
     .createUser({
@@ -129,16 +129,34 @@ async function createFirebaseUserFromLineData(userData, customUid) {
       displayName: userData.displayName,
       photoURL: userData.pictureUrl
     })
-    .then((data) => {
+    .then(async (data) => {
       console.log(data);
-      // TODO Save Line user ID to Firestore
-      const db = getFirestore();
-      db.doc().set()
+      // https://retool.com/blog/crud-with-cloud-firestore-using-the-nodejs-sdk/
+      await saveUserLineData(userData);
       return data;
     })
+    .catch(async (error) => {
+      switch (error.code) {
+        case "auth/uid-already-exists":
+          await saveUserLineData(userData);
+          return { uid };
+        default:
+          console.error(error);
+          throw new APIError("500", "Error: creating user Firebase", error);
+      }
+    });
+}
+
+async function saveUserLineData(userData) {
+  const db = getFirestore();
+  await db.collection("users_line")
+    .doc(`line:${userData.userId}`)
+    .set({
+      ...userData,
+    })
     .catch((error) => {
-      console.error(error);
-      throw new APIError("500", "Error: creating user Firebase", error);
+      getAuth().deleteUser(uid);
+      throw new APIError("500", "Error: store data to Firestore", error);
     });
 }
 
