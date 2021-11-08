@@ -1,10 +1,9 @@
 <template>
-  <a
-    href="https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=1656499349&redirect_uri=https://sso.kingonhuy.local:8080/auth/line&state=12345abcde&scope=profile%20openid&bot_prompt=aggressive"
-  >Login</a>
+  <p>https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=1656499349&redirect_uri=https://sso.kingonhuy.local:8080/auth/line&state=12345abcde&scope=profile%20openid&bot_prompt=aggressive</p>
   <br />
   <br />
-  <button @click="loginLine">Line with Line</button>
+  <button v-if="!isLogin" @click="loginLine">Line with Line</button>
+  <button v-else @click="logout">Logout</button>
   <h1>Line</h1>
   <a
     href="https://developers.line.biz/en/docs/line-login/integrate-line-login/#making-an-authorization-request"
@@ -24,7 +23,10 @@
   <hr />
   <div v-if="isLoading">Loading . . .</div>
   <div v-else style="display: grid;">
-    <textarea style="width: 500px; height: 500px;" v-model="showLoginData"></textarea>
+    <div style="display: flex;">
+      <textarea style="width: 50%; height: 500px;" v-model="showLoginData" disabled></textarea>
+      <textarea style="width: 50%; height: 500px;" disabled>{{ buetyJson(firebaseUserData) }}</textarea>
+    </div>
     <hr />
     <input v-model="userId" placeholder="User ID" />
     <input v-model="sendMsgLineWith.id" placeholder="Channel ID" />
@@ -42,6 +44,12 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import axios from "axios";
+import {
+  getAuth,
+  signInWithCustomToken,
+  onAuthStateChanged,
+  signOut,
+} from "firebase/auth";
 
 interface LoginData {
   profile: {
@@ -228,6 +236,7 @@ export default defineComponent({
 }`,
       isSend: false,
       profile: {},
+      firebaseUserData: {},
       userId: "",
       loading: {
         sedingMsg: false,
@@ -237,6 +246,7 @@ export default defineComponent({
         id: "",
         secret: "",
       },
+      isLogin: false,
     }
   },
   computed: {
@@ -259,8 +269,34 @@ export default defineComponent({
         this.userId = this.loginData.profile.userId;
       }
     }
+    const auth = getAuth();
+    auth.languageCode = 'th';
+
+    const cssLog = "background: #222; color: #ff8d00";
+    onAuthStateChanged(auth, (user) => {
+      this.firebaseUserData = user ?? {};
+      if (user) {
+        console.log("%cLoged IN", cssLog);
+        this.isLogin = true;
+      } else {
+        console.log("%cLoged OUT", cssLog);
+        this.isLogin = false;
+      }
+      console.log(user);
+    })
   },
   methods: {
+    async logout() {
+      await signOut(getAuth())
+        .then(() => {
+          console.log("Sign out !");
+        }).catch((error) => {
+          console.warn(error)
+        });
+    },
+    buetyJson(data: any) {
+      return JSON.stringify(data, null, 2);
+    },
     randomString(length: number) {
       // 43-128
       const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-._~";
@@ -311,21 +347,35 @@ export default defineComponent({
 
       window.open("https://access.line.me/oauth2/v2.1/authorize/?" + params, "_self")
     },
-    callbackToBackend(code: string, state: string) {
+    async callbackToBackend(code: string, state: string) {
       this.isLoading = true;
       const codeVerifier = localStorage.getItem("codeVerifier");
-      return axios.post("https://localhost:3000/v1/auth/line", {
-        code,
-        state,
-        code_verifier: codeVerifier,
-      }).then((response) => {
-        return response.data;
-      }).catch((error) => {
-        this.error = error.response.data;
-        return error.response.data;
-      }).finally(() => {
-        this.isLoading = false;
-      });
+      return await axios.post<any, any>(
+        "https://localhost:3000/v1/auth/line",
+        {
+          code,
+          state,
+          code_verifier: codeVerifier,
+        }
+      )
+        .then(async (response) => {
+          const { data } = response;
+          await signInWithCustomToken(getAuth(), data.firebaseToken)
+            .then((data) => {
+              console.log(data);
+            })
+            .catch((error) => {
+              console.error("signInWithCustomToken", error);
+            });
+          return data;
+        })
+        .catch((error) => {
+          this.error = error.response.data;
+          return error.response.data;
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
     },
     sendLineMessage() {
       let msg = JSON.parse(this.message);
