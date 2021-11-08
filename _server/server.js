@@ -9,6 +9,8 @@ import errorHandler from './controllers/error-controller.js';
 import bodyParser from 'body-parser';
 import router from './routes/index.js';
 
+import './libs/firebase.js';
+
 const app = express();
 try {
 	app.use(cors());

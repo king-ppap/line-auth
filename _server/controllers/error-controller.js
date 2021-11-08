@@ -26,6 +26,6 @@ export default function errorHandler(error, response) {
     default:
       return response
         .status(500)
-        .json({ error: 'internal', message: error.message || 'error' })
+        .json({ error: 'internal', message: error.message || 'error', detail: error.detail || "No detail" })
   }
 };

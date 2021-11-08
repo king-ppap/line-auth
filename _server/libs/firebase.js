@@ -1,12 +1,21 @@
-import FirebaseAdmin from "firebase-admin";
-// import serviceAccount from "../key/firebase.json";
+import {
+  initializeApp,
+  applicationDefault,
+} from "firebase-admin/app";
 
-import fs from 'fs';
+import admin from "firebase-admin";
 
-const serviceAccount = fs.readFileSync('./key/firebase.json');
-console.log(serviceAccount.toString('utf8'));
-FirebaseAdmin.initializeApp({
-  credential: FirebaseAdmin.credential.cert('./key/firebase.json'),
+// https://firebase.google.com/docs/admin/setup#initialize-sdk
+// https://firebase.google.com/docs/firestore/quickstart#initialize
+
+// import fs from 'fs';
+// const serviceAccount = fs.readFileSync('./key/firebase.json');
+// console.log(serviceAccount.toString('utf8'));
+initializeApp({
+  credential: admin.credential.cert('./key/firebase.json'),
 });
+// initializeApp({
+//   credential: applicationDefault(),
+// });
 
-export default FirebaseAdmin;
+console.log("Initialize Firebase App");

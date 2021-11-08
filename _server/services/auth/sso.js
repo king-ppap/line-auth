@@ -3,7 +3,12 @@ import axios from "axios";
 
 import APIError from '../../errors/api-error.js';
 
-import FirebaseAdmin from '../../libs/firebase.js';
+import {
+  getAuth,
+} from 'firebase-admin/auth';
+import {
+  getFirestore,
+} from "firebase-admin/firestore";
 
 async function authLineService(request) {
   console.log("authLineService");
@@ -52,20 +57,96 @@ async function authLineService(request) {
     }).catch((error) => {
       throw new APIError("InvalidRequestError", "Error: Line v2 Profile API", error.response.data);
     });
+  // https://stackoverflow.com/questions/40171663/linking-custom-auth-provider-with-firebase
+  // https://firebase.google.com/docs/auth/admin/manage-users#create_a_user
+  /*
+  "profile": {
+          "userId": "xxx",
+          "displayName": "King คิง",
+          "statusMessage": "(emoji)(emoji)(emoji)(emoji)(emoji)(emoji)",
+          "pictureUrl": "https://profile.line-scdn.net/xxx"
+      }
+  */
+  // Search for existing users in our database first.
+  const db = getFirestore();
+  const lineData = await db.doc(`users_line/${profile.userId}`).get()
+    .then((data) => {
+      return data.data();
+    })
+    .catch((error) => {
+      return error;
+    });
+  console.log(lineData);
 
-  // FirebaseAdmin.
+  console.log(getAuth().app.name);
 
-    return {
+  let firebaseUser = "ฮั่นแน่ ลืมทำไรไปปาวอะเรา";
+  if (lineData) {
+    firebaseUser = await getAuth()
+      .getUser(firebaseUID)
+      .then((data) => {
+        return data;
+      })
+      .catch(async (error) => {
+        if (error.code === "auth/user-not-found") {
+          return await createFirebaseUserFromLineData(profile);
+        } else {
+          console.error(error);
+          throw new APIError("500", "Error: Cannot get Firebase user data", error);
+        }
+      });
+  } else {
+    console.log("Create new User");
+    firebaseUser = await createFirebaseUserFromLineData(profile, `line:${profile.userId}`);
+    console.log("Done create");
+  }
+
+  // https://firebase.google.com/docs/auth/admin/create-custom-tokens#create_custom_tokens_using_the_firebase_admin_sdk
+  const firebaseToken = await getAuth()
+    .createCustomToken(firebaseUser.uid)
+    // .createCustomToken(firebaseUser.uid, profile)
+    .then((customToken) => {
+      return customToken;
+    })
+    .catch((error) => {
+      console.log('Error creating custom token:', error);
+      throw new APIError("500", "Error: creating custom token Firebase", error);
+    });
+
+  return {
     lineAccess,
-      profile,
+    profile,
+    firebaseToken,
   };
 };
+
+async function createFirebaseUserFromLineData(userData, customUid) {
+  let uid = customUid || userData.userId;
+  console.log("createFirebaseUserFromLineData", uid);
+  return await getAuth()
+    .createUser({
+      uid,
+      displayName: userData.displayName,
+      photoURL: userData.pictureUrl
+    })
+    .then((data) => {
+      console.log(data);
+      // TODO Save Line user ID to Firestore
+      const db = getFirestore();
+      db.doc().set()
+      return data;
+    })
+    .catch((error) => {
+      console.error(error);
+      throw new APIError("500", "Error: creating user Firebase", error);
+    });
+}
 
 async function authLineFirebaseService() {
 
 }
 
-export default  {
+export default {
   authLineService,
   authLineFirebaseService,
 };
