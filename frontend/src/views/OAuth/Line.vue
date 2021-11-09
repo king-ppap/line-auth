@@ -247,7 +247,7 @@ export default defineComponent({
         secret: "",
       },
       isLogin: false,
-    }
+    };
   },
   computed: {
     fromLine(): string {
