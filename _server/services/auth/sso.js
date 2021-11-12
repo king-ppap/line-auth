@@ -69,7 +69,7 @@ async function authLineService(request) {
   */
   // Search for existing users in our database first.
   const db = getFirestore();
-  const lineData = await db.doc(`users_line/line:${profile.userId}`).get()
+  const lineData = await db.doc(`users/line:${profile.userId}`).get()
     .then((data) => {
       return data.data();
     })
@@ -149,7 +149,7 @@ async function createFirebaseUserFromLineData(userData, customUid) {
 
 async function saveUserLineData(userData) {
   const db = getFirestore();
-  await db.collection("users_line")
+  await db.collection("users")
     .doc(`line:${userData.userId}`)
     .set({
       ...userData,

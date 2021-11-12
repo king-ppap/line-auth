@@ -55,7 +55,7 @@ interface LoginData {
   profile: {
     userId: string,
   },
-  code: object,
+  code: any,
 }
 
 export default defineComponent({

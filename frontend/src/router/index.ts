@@ -3,7 +3,7 @@ import Home from "../views/Home.vue";
 import { h, resolveComponent } from "vue";
 
 function load(name: string) {
-  return import(`../views/${name}`);
+  return () => import(`../views/${name}`);
 }
 
 const routes: Array<RouteRecordRaw> = [
